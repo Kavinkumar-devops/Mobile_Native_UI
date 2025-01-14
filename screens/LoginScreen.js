@@ -7,8 +7,8 @@ import Loading from '../Loading';
 import Popup from './Popup/popup.js'; // Adjust the path if necessary
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('AD004');
-  const [password, setPassword] = useState('sk1');
+  const [email, setEmail] = useState('user1@gmail.com');
+  const [password, setPassword] = useState('user1@123');
   const [loading, setLoading] = useState(false);
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -23,13 +23,13 @@ const LoginScreen = ({ navigation }) => {
     }
     setLoading(true);  
     try {
-      const response = await fetch(`${config.API_URL}/Auth`, {
+      const response = await fetch(`${config.API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Username: email,
+          email: email,
           password: password,
         }),
       });
@@ -42,20 +42,15 @@ const LoginScreen = ({ navigation }) => {
       } else {
         data = await response.text();
       }
-
       if (response.ok) {
         await AsyncStorage.setItem('authToken', data.token);
         await AsyncStorage.setItem('isLoggedIn', 'true');
-        await AsyncStorage.setItem('username', email);
+        await AsyncStorage.setItem('username', data.username);
+        await AsyncStorage.setItem('RoleID', data.RoleID.toString());
+        await AsyncStorage.setItem('UserID', data.UserID.toString());
 
         navigation.replace('Home');
-        // setTimeout(() => {
-        //   hidePopup();
-        //   navigation.replace('Home'); // Navigate to Home screen after a delay
-        // }, 2000); // Delay in milliseconds
       } else {
-        // const errorMessage = typeof data === 'string' ? data : data.message || 'Invalid credentials';
-        // Alert.alert('Login Failed', errorMessage);
        showPopup(); // Show the popup on successful login
        setTimeout(() => {
           hidePopup();
@@ -78,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/Logo/logosch.png')} style={styles.logo} />
+      <Image source={require('../assets/Logo/pngwing.png')} style={styles.logo} />
       <Text style={styles.welcomeText}>Welcome!</Text>
 
       <View style={styles.inputContainer}>
@@ -142,8 +137,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'whitesmoke',
   },
   logo: {
-    width: 180,
-    height: 220,
+    width: 250,
+    height: 280,
     resizeMode: 'contain',
     marginTop: 50, // Adjust this value to move the logo up or down
   },

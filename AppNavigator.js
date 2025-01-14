@@ -99,7 +99,7 @@ const AppNavigator = () => {
         />            
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen 
-        name="HomeWork" 
+        name="Customers" 
         component={HomeWorkScreen} 
         options={{
           headerTitle: 'Home Work',

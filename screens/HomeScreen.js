@@ -15,7 +15,7 @@ const [loading, setLoading] = useState(false);
       }, []);
 
       const menuItems = [
-        {id: 1, title: 'HomeWork', icon: require('../assets/Images/hw1.png') },
+        {id: 1, title: 'Customers', icon: require('../assets/Images/hw1.png') },
         {id: 16, title: 'Update_HW', icon: require('../assets/Images/hw2.png') },
         {id: 3, title: 'AttendanceInput', icon: require('../assets/Images/attendance.png') },
         {id: 2, title: 'View_Attendance', icon: require('../assets/Images/attendance1.png') },
@@ -30,7 +30,6 @@ const [loading, setLoading] = useState(false);
         {id: 12, title: 'Fee Receipt', icon: require('../assets/Images/bill.png') },
         {id: 13, title: 'Feedback List', icon: require('../assets/Images/feedback.png') },
         {id: 14, title: 'Visitor List', icon: require('../assets/Images/visitor.png') },
-        {id: 15, title: 'Thoughts', icon: require('../assets/Images/thought.png') },
       ];
       if (loading) {
         return <Loading />;
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
     width: '30%', // Increase width for larger icons
     alignItems: 'center',
     marginVertical: 15,
-    backgroundColor: '#E2AE2D',
+    backgroundColor: 'hsl(0, 48.30%, 59.00%)',
     borderRadius: 10,
     padding: 10,
     elevation: 10, // Shadow for Android
