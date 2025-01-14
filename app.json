@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "SMA",
+    "slug": "Scratch_3",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/education.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/education.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/education.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.dhinkar.Scratch_3"
+    },
+    "web": {
+      "favicon": "./assets/education.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e5f1962f-1ce2-4ef5-88ff-5b5a826f3bcd"
+      }
+    }
+  }
+}
