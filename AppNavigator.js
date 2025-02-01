@@ -8,6 +8,7 @@ import AttendanceView from './screens/AttendanceView';
 import TakeAttendance from './screens/TakeAttendance';
 import RegisterScreen from './screens/RegisterScreen'; // Import RegisterScreen
 import HomeWorkScreen from './screens/HomeWorkScreen';
+import vehicle from './screens/vehicle/VehicleScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AttendanceInput from './screens/AttendanceInputScreen';
 import HWInput from './screens/HWInputScreen';
@@ -53,6 +54,51 @@ const CustomHeader = ({ navigation }) => {
     </View>
   );
 };
+const CustomHeader_Vehicle = ({ navigation }) => {
+
+  const [principle, setprinciple] = useState('');
+  const [principleID, setprincipleID] = useState('');
+
+  useEffect(() => {
+    // Fetch the email from AsyncStorage
+    const fetchEmail = async () => {
+      try {
+        const selectedPrinciple = await AsyncStorage.getItem('selectedPrinciple');
+        const selectedPrincipleID = await AsyncStorage.getItem('selectedPrincipleID');
+        if (selectedPrinciple) {
+          setprinciple(selectedPrinciple);
+          setprincipleID(selectedPrincipleID);
+        }
+      } catch (error) {
+        console.error('Error fetching email:', error);
+      }
+    };
+
+    fetchEmail();
+  }, []);
+
+  return (
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerTitle}>{principle}</Text>
+      <View style={styles.headerIcons}>
+        <TouchableOpacity onPress={() => alert('Notifications')}>
+          <Image source={NotificationIcon} style={styles.icon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Image source={ProfileIcon} style={styles.icon} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const commonHeaderOptions = {
+  headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
+  headerStyle: { backgroundColor: '#FFD700' },
+  headerBackTitleVisible: false,
+  headerTintColor: 'black',
+};
+
 
 const AppNavigator = () => {
 
@@ -84,98 +130,92 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isLoggedIn ? "Home" : "Login"}>
+      <Stack.Navigator initialRouteName={isLoggedIn ? "Vehicle" : "Login"}>
         <Stack.Screen 
           name="Login" 
           component={LoginScreen} 
           options={{ headerShown: false }}
-        />
+        />         
+         <Stack.Screen 
+          name="Vehicle" 
+          component={vehicle} 
+          options={({ navigation }) => ({
+            header: () => <CustomHeader navigation={navigation} />,
+            
+          })}
+        /> 
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 
           options={({ navigation }) => ({
-            header: () => <CustomHeader navigation={navigation} />,
-          })}
-        />            
+            header: () => <CustomHeader_Vehicle navigation={navigation} />,
+          })} 
+        />        
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen 
         name="Customers" 
         component={HomeWorkScreen} 
         options={{
-          headerTitle: 'Home Work',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "Customers",
+          ...commonHeaderOptions, // Apply common header options
+        }}   
       />
       <Stack.Screen 
         name="View_Attendance" 
         component={AttendanceView} 
         options={{
-          headerTitle: 'Attendance',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "View_Attendance",
+          ...commonHeaderOptions, // Apply common header options
+        }}
       />
       <Stack.Screen 
         name="AttendanceInput" 
         component={AttendanceInput} 
         options={{
-          headerTitle: 'AttendanceInput',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "AttendanceInput",
+          ...commonHeaderOptions, // Apply common header options
+        }}
       />
       <Stack.Screen 
         name="TakeAttendance" 
         component={TakeAttendance} 
         options={{
-          headerTitle: 'TakeAttendance',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "AttendanceInput",
+          ...commonHeaderOptions, // Apply common header options
+        }}
       />
       <Stack.Screen 
         name="Update_HW" 
         component={HWInput} 
         options={{
-          headerTitle: 'Homework_Input',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "AttendanceInput",
+          ...commonHeaderOptions, // Apply common header options
+        }}
       />
       <Stack.Screen 
         name="HWUpdate" 
         component={HWUpdate} 
         options={{
-          headerTitle: 'Home Work Assignments',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "AttendanceInput",
+          ...commonHeaderOptions, // Apply common header options
+        }}
       />
       <Stack.Screen 
         name="T&C" 
         component={TermsConditions} 
         options={{
-          headerTitle: 'Terms & Conditions',
-          headerTitleStyle: { fontSize: 20, color: 'black', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#FFD700' },
-          headerBackTitleVisible: false,
-          headerTintColor: 'black',
-        }} 
+          headerTitle: "Terms & Conditions",
+          ...commonHeaderOptions, // Apply common header options
+        }}
       />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen 
+      name="Profile" 
+      component={ProfileScreen} 
+      options={{
+        headerTitle: "Profile",
+        ...commonHeaderOptions, // Apply common header options
+      }}
+      />
     </Stack.Navigator>
   </NavigationContainer>
   );
@@ -191,8 +231,8 @@ const styles = {
     // alignItems: 'center',
     backgroundColor: '#f9e003', // Light blue background for the header
     paddingHorizontal: 20,
-    height: 100, // Increase the height of the header
-    paddingBottom: 8, // Add some padding to move elements down
+    height: 85, // Increase the height of the header
+    paddingBottom: 10, // Add some padding to move elements down
   },
   headerTitle: {
     fontSize: 16,

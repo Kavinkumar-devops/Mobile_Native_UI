@@ -49,7 +49,8 @@ const LoginScreen = ({ navigation }) => {
         await AsyncStorage.setItem('RoleID', data.RoleID.toString());
         await AsyncStorage.setItem('UserID', data.UserID.toString());
 
-        navigation.replace('Home');
+
+        navigation.replace('Vehicle');
       } else {
        showPopup(); // Show the popup on successful login
        setTimeout(() => {
