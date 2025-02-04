@@ -21,15 +21,12 @@ const DynamicMenu = () => {
       if (UserID)
       {
         try {
-              const response = await fetch(`${config.API_URL}/principles`, {
-                method: 'POST',
+              const response = await fetch(`${config.API_URL}/principles/${UserID}`, {
+                method: 'GET',
                 headers: {
                   Authorization: `Bearer ${token}`,
                   'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  UserID: UserID
-                }),
+                }
               });
           if (response.ok) {
             const data = await response.json();
