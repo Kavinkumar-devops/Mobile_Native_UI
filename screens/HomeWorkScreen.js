@@ -1,125 +1,173 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import Loading from '../Loading'; 
-import commonStyles from './Styles/HomeWorkcss';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/Ionicons';
-import RefreshButton from './RefreshButton';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 
-const HomeWorkScreen = () => {
-  const [loading, setLoading] = useState(true);
-  const [homeworkList, setHomeworkList] = useState([]);
-  const [groupedHomework, setGroupedHomework] = useState({});
-  const [selectedDate, setSelectedDate] = useState(null); // Track the currently selected date
+const CustomerList = () => {
+  const customers = [
+    {
+      CustomerID: 'C12345',
+      CustomerName: 'John Doe',
+      Address: '123 Main Street, City, Country',
+      PhoneNumber: '+1234567890',
+      ModifiedDateTime: '2025-01-22 14:35:00',
+      PrincipleID: 'P67890',
+    },
+    {
+      CustomerID: 'C12346',
+      CustomerName: 'Jane Smith',
+      Address: '456 Elm Street, City, Country',
+      PhoneNumber: '+9876543210',
+      ModifiedDateTime: '2025-01-21 10:15:00',
+      PrincipleID: 'P67891',
+    },
+    {
+      CustomerID: 'C12347',
+      CustomerName: 'Mark Taylor',
+      Address: '789 Oak Street, City, Country',
+      PhoneNumber: '+1122334455',
+      ModifiedDateTime: '2025-01-20 08:25:00',
+      PrincipleID: 'P67892',
+    },
+  ];
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [searchText, setSearchText] = useState('');
+  const [filteredCustomers, setFilteredCustomers] = useState(customers); // Initialize with the customers list
+  const [expandedCustomer, setExpandedCustomer] = useState(null);
 
-  useEffect(() => {
-    fetchAttendanceData();
-  }, []);
+  const handleSearch = (text) => {
+    setSearchText(text);
 
-  const groupAssignmentsByDate = (assignments) => {
-    return assignments.reduce((acc, item) => {
-      const date = item.assignment_date.split('T')[0];
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(item);
-      return acc;
-    }, {});
-  };
-
-  const fetchAttendanceData = async () => {
-    setLoading(true);
-    try {
-      const token = await AsyncStorage.getItem('authToken');
-      if (!token) {
-        Alert.alert("Error", "Token not found");
-        return;
-      }
-      const response = await fetch(`https://sitapi.arvens3.com/api/Homeworks`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.status === 200) {
-        const data = await response.json();       
-        setHomeworkList(data);
-      } else {
-        Alert.alert("Error", "Please contact admin.");
-      }
-    } catch (error) {
-      console.error("Error fetching attendance data:", error);
-    } finally {
-      setLoading(false);
+    if (text.trim() === '') {
+      setFilteredCustomers(customers); // Show all customers if search text is empty
+    } else {
+      const filtered = customers.filter((customer) =>
+        customer.CustomerName.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredCustomers(filtered);
     }
   };
 
-  useEffect(() => {
-    const groupedData = groupAssignmentsByDate(homeworkList);
-    setGroupedHomework(groupedData);
+  const handleExpand = (customerID) => {
+    setExpandedCustomer((prev) => (prev === customerID ? null : customerID));
+  };
 
-    // Set the first date as selected by default
-    const firstDate = Object.keys(groupedData)[0];
-    if (firstDate) setSelectedDate(firstDate);
-  }, [homeworkList]);
+  const renderCustomer = ({ item }) => (
+    <View style={styles.customerCard}>
+      <TouchableOpacity onPress={() => handleExpand(item.CustomerID)}>
+        <Text style={styles.customerName}>{item.CustomerName}</Text>
+        <Text style={styles.phoneNumber}>{item.PhoneNumber}</Text>
+      </TouchableOpacity>
 
-  const renderHomeworkItem = ({ item }) => (
-    <View style={commonStyles.itemContainer}>
-      <Text style={commonStyles.subjectText}>{item.subject_name}</Text>
-      <Text style={commonStyles.descriptionText}>{item.assignment}</Text>
+      {expandedCustomer === item.CustomerID && (
+        <View style={styles.additionalDetails}>
+          <Text style={styles.label}>Address:</Text>
+          <Text style={styles.value}>{item.Address}</Text>
+
+          <Text style={styles.label}>Modified Date:</Text>
+          <Text style={styles.value}>{item.ModifiedDateTime}</Text>
+
+          <Text style={styles.label}>Principle ID:</Text>
+          <Text style={styles.value}>{item.PrincipleID}</Text>
+        </View>
+      )}
     </View>
   );
 
-  if (loading) {
-    return <Loading />;
-  }
-
-  const renderDateSection = ({ item }) => {
-    const [date, assignments] = item;
-    const isSelected = selectedDate === date;
-
-    return (
-      <View style={commonStyles.dateSection}>
-        <TouchableOpacity onPress={() => setSelectedDate(isSelected ? null : date)}>
-          <Text style={commonStyles.dateText}>{formatDate(date)}</Text>
-        </TouchableOpacity>
-        {isSelected && (
-          <FlatList
-            data={assignments}
-            renderItem={renderHomeworkItem}
-            keyExtractor={(item) => item.homework_id.toString()}
-          />
-        )}
-      </View>
-    );
-  };
-
-  const formatDate = (dateStr) => {
-    const dateObj = new Date(dateStr);
-    return dateObj.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
   return (
-    <View style={commonStyles.container}>
-      <View style={commonStyles.headerRow}>
-        <Text style={commonStyles.headerText}>Home Work Assignments</Text>
-        <RefreshButton onPress={fetchAttendanceData} />
-      </View>
+    <View style={styles.container}>
+      <Text style={styles.heading}>Customer List</Text>
+      <Text style={styles.customerCount}>
+        Total Customers: {filteredCustomers.length}
+      </Text>
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search by Customer Name"
+        value={searchText}
+        onChangeText={handleSearch}
+      />
       <FlatList
-        data={Object.entries(groupedHomework)}
-        renderItem={renderDateSection}
-        keyExtractor={(item) => item[0]}
+        data={filteredCustomers}
+        keyExtractor={(item) => item.CustomerID}
+        renderItem={renderCustomer}
+        contentContainerStyle={styles.list}
+        ListEmptyComponent={<Text style={styles.emptyText}>No customers found.</Text>}
       />
     </View>
   );
 };
 
-export default HomeWorkScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
+  customerCount: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 16,
+  },
+  searchBar: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+    backgroundColor: '#fff',
+  },
+  list: {
+    paddingBottom: 16,
+  },
+  customerCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  customerName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  phoneNumber: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 8,
+  },
+  additionalDetails: {
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 8,
+  },
+  label: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 4,
+  },
+  value: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#999',
+    marginTop: 20,
+  },
+});
+
+export default CustomerList;
